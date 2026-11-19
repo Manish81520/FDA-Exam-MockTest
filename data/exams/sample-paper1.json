@@ -1,0 +1,29 @@
+{
+  "exam_id": "sample-paper1",
+  "title": "ಮಾದರಿ (SAMPLE) ಪರೀಕ್ಷೆ – ಸಾಮಾನ್ಯ ಜ್ಞಾನ",
+  "paper_label": "ಪೇಪರ್ ೧",
+  "duration_minutes": 10,
+  "questions": [
+    {"id": "s-1", "topic": "polity", "question": "ಭಾರತದ ಸಂವಿಧಾನ ಜಾರಿಗೆ ಬಂದ ದಿನಾಂಕ ಯಾವುದು?",
+     "question_en": "On which date did the Constitution of India come into force?",
+     "options": ["15 ಆಗಸ್ಟ್ 1947", "26 ನವೆಂಬರ್ 1949", "26 ಜನವರಿ 1950", "2 ಅಕ್ಟೋಬರ್ 1950"],
+     "options_en": ["15 August 1947", "26 November 1949", "26 January 1950", "2 October 1950"], "correct_index": 2,
+     "explanation": "ಸಂವಿಧಾನ 1949ರ ನವೆಂಬರ್ 26ರಂದು ಅಂಗೀಕಾರವಾಗಿ, 1950ರ ಜನವರಿ 26ರಂದು ಜಾರಿಗೆ ಬಂದಿತು."},
+    {"id": "s-2", "topic": "history_karnataka", "question": "ಕರ್ನಾಟಕ ಏಕೀಕರಣ ಯಾವ ವರ್ಷ ನಡೆಯಿತು?",
+     "question_en": "In which year was Karnataka unified?",
+     "options": ["1947", "1950", "1956", "1973"], "options_en": ["1947", "1950", "1956", "1973"], "correct_index": 2,
+     "explanation": "1956ರ ನವೆಂಬರ್ 1ರಂದು ಮೈಸೂರು ರಾಜ್ಯ ರಚನೆಯಾಯಿತು."},
+    {"id": "s-3", "topic": "geography", "question": "ಕರ್ನಾಟಕದ ಅತಿ ಎತ್ತರದ ಶಿಖರ ಯಾವುದು?",
+     "question_en": "Which is the highest peak in Karnataka?",
+     "options": ["ಕುದುರೆಮುಖ", "ಮುಳ್ಳಯ್ಯನಗಿರಿ", "ಬಾಬಾಬುಡನ್‌ಗಿರಿ", "ನಂದಿ ಬೆಟ್ಟ"],
+     "options_en": ["Kudremukh", "Mullayanagiri", "Baba Budangiri", "Nandi Hills"], "correct_index": 1,
+     "explanation": "ಮುಳ್ಳಯ್ಯನಗಿರಿ (ಚಿಕ್ಕಮಗಳೂರು) ಸುಮಾರು 1,930 ಮೀ ಎತ್ತರವಿದೆ."},
+    {"id": "s-4", "topic": "science", "question": "ನೀರಿನ ರಾಸಾಯನಿಕ ಸೂತ್ರ ಯಾವುದು?",
+     "question_en": "What is the chemical formula of water?",
+     "options": ["CO2", "H2O", "O2", "NaCl"], "correct_index": 1, "explanation": "ಎರಡು ಹೈಡ್ರೋಜನ್ ಮತ್ತು ಒಂದು ಆಮ್ಲಜನಕ ಪರಮಾಣು."},
+    {"id": "s-5", "topic": "computer", "question": "ಕಂಪ್ಯೂಟರ್‌ನ ಮೆದುಳು ಎಂದು ಯಾವುದನ್ನು ಕರೆಯುತ್ತಾರೆ?",
+     "question_en": "Which part is called the brain of the computer?",
+     "options": ["ಮೌಸ್", "CPU", "ಕೀಬೋರ್ಡ್", "ಮಾನಿಟರ್"], "options_en": ["Mouse", "CPU", "Keyboard", "Monitor"], "correct_index": 1,
+     "explanation": "CPU ಎಲ್ಲಾ ಸೂಚನೆಗಳನ್ನು ಸಂಸ್ಕರಿಸುತ್ತದೆ."}
+  ]
+}
