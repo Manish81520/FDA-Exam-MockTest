@@ -21,14 +21,14 @@ export default function Login({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <>
+    <section className="login-page">
       <h1>{K.title}</h1>
-      <form className="card" onSubmit={(e) => void submit(e)}>
+      <form className="card login-card" onSubmit={(e) => void submit(e)}>
         <input type="password" autoComplete="current-password" autoFocus required
           placeholder={K.pass} aria-label={K.pass} value={pass} onChange={(e) => setPass(e.target.value)} />
-        <p className="warn" role="alert">{err}</p>
+        <p className="warn" role="alert" aria-live="assertive" aria-atomic="true">{err}</p>
         <button className="btn pri" disabled={busy}>{K.login}</button>
       </form>
-    </>
+    </section>
   );
 }

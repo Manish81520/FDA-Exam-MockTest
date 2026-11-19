@@ -37,7 +37,7 @@ export default function App() {
   const authed = view.name !== "boot" && view.name !== "login";
 
   return (
-    <>
+    <div className="app">
       {authed && <NavBar active={active} onHome={goHome} onPast={goPast} onLogout={logout} />}
       <main className="shell">
         {view.name === "boot" && <p className="mut">{K.loading}</p>}
@@ -51,6 +51,6 @@ export default function App() {
       </main>
       {toast}
       <footer className="foot">{K.footer}</footer>
-    </>
+    </div>
   );
 }

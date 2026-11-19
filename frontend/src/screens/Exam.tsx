@@ -30,6 +30,7 @@ export default function Exam({ attempt, onDone, notify }: Props) {
   const [left, setLeft] = useState(remaining);
   const finishing = useRef(false);
   const warned = useRef(new Set<number>());
+  const previousLeft = useRef(left);
 
   const nextOpen = (from: number, answered: Record<string, Choice> = ans) => {
     for (let k = 1; k <= qs.length; k++) {
@@ -116,11 +117,12 @@ export default function Exam({ attempt, onDone, notify }: Props) {
 
   useEffect(() => {
     for (const w of [600, 120]) {
-      if (left > 0 && left <= w && !warned.current.has(w)) {
+      if (previousLeft.current > w && left > 0 && left <= w && !warned.current.has(w)) {
         warned.current.add(w);
         notify(K.timeWarn);
       }
     }
+    previousLeft.current = left;
   }, [left, notify]);
 
   useEffect(() => {
@@ -169,7 +171,10 @@ export default function Exam({ attempt, onDone, notify }: Props) {
         </div>
         <div className="clock">
           <small>{K.timeLeft}</small>
-          <b role="timer" className={left <= 600 ? "low" : ""}><Icon n="clock" size={20} />{clock(left)}</b>
+          <b role="timer" className={left <= 600 ? "low" : ""}>
+            <Icon n="clock" size={20} />
+            <span>{clock(left)}</span>
+          </b>
         </div>
       </div>
       <p className="banner"><Icon n="alert" size={16} /><b>{K.note}</b> {K.banner(penalty.toFixed(2))}</p>
