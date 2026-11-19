@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
+import Icon from "../components/Icon";
 import { clock, LETTERS } from "../format";
 import { K } from "../i18n";
 import type { Attempt, Outcome, Question, Result as ResultData, ReviewItem } from "../types";
@@ -67,6 +68,22 @@ export default function Result({ id, onHome, notify }: Props) {
     blank: r.counts.blank * marks.blank,
   };
 
+  const downloadResult = () => {
+    const previousFilter = filter;
+    const previousTitle = document.title;
+    setFilter("all");
+    document.title = `${attempt.title} - Result`;
+
+    const restorePage = () => {
+      document.title = previousTitle;
+      setFilter(previousFilter);
+    };
+    window.addEventListener("afterprint", restorePage, { once: true });
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => window.print());
+    });
+  };
+
   return (
     <div className="result-page">
       <header className="result-heading">
@@ -75,7 +92,12 @@ export default function Result({ id, onHome, notify }: Props) {
           <h1>{K.title}</h1>
           <p className="mut">ನಿಮ್ಮ ಪರೀಕ್ಷೆಯ ಸಾಧನೆ ಮತ್ತು ಉತ್ತರಗಳ ವಿವರ</p>
         </div>
-        <button type="button" className="btn result-home" onClick={onHome}>{K.home}</button>
+        <div className="result-actions">
+          <button type="button" className="btn pri" onClick={downloadResult}>
+            <Icon n="download" size={17} />Download result (PDF)
+          </button>
+          <button type="button" className="btn result-home" onClick={onHome}>{K.home}</button>
+        </div>
       </header>
 
       <section className="result-hero card" aria-label="Overall exam result">

@@ -11,6 +11,7 @@ const PATHS: Record<string, ReactNode> = {
   alert: <><path d="M12 3l10 18H2z" /><path d="M12 10v5M12 18v.01" /></>,
   grid: <><rect x="4" y="4" width="6" height="6" /><rect x="14" y="4" width="6" height="6" /><rect x="4" y="14" width="6" height="6" /><rect x="14" y="14" width="6" height="6" /></>,
   clipboard: <><rect x="6" y="4" width="12" height="17" rx="2" /><path d="M9 12l2 2 4-4" /></>,
+  download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5M12 15V3" /></>,
 };
 
 export default function Icon({ n, size = 18 }: { n: keyof typeof PATHS; size?: number }) {

@@ -1466,6 +1466,14 @@ dialog .row {
   align-items: flex-start;
 }
 
+.result-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .result-heading h1 {
   margin: 2px 0 4px;
 }
@@ -2115,17 +2123,27 @@ dialog .row {
 
 @media (max-width: 520px) {
   .result-heading {
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .result-heading .mut {
     font-size: 0.86rem;
   }
 
-  .result-home {
+  .result-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .result-actions .btn {
     min-height: 40px;
     padding: 6px 10px;
     font-size: 0.82rem;
+  }
+
+  .result-home {
+    min-height: 40px;
   }
 
   .result-hero {
@@ -2248,5 +2266,89 @@ dialog .row {
 
   .result-question-status {
     margin-left: 0;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body,
+  html {
+    min-width: 0;
+    background: #fff;
+    color: #111;
+    font-size: 10pt;
+  }
+
+  .nav,
+  .foot,
+  .toast,
+  .result-actions,
+  .result-filters {
+    display: none !important;
+  }
+
+  .app,
+  .shell {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .result-page {
+    display: block;
+    max-width: none;
+  }
+
+  .result-heading {
+    margin-bottom: 16pt;
+  }
+
+  .result-section {
+    margin-top: 20pt;
+    break-inside: auto;
+  }
+
+  .result-hero,
+  .result-outcome-card,
+  .result-panel,
+  .result-avoidable,
+  .result-topic,
+  .result-question {
+    box-shadow: none;
+    background: #fff;
+    break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .result-question-list,
+  .result-topic-list {
+    gap: 8pt;
+  }
+
+  .result-question {
+    margin: 0;
+    padding: 12pt;
+  }
+
+  .result-question h3,
+  .result-question-kannada,
+  .result-explanation p {
+    overflow-wrap: anywhere;
+  }
+
+  .result-track {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 }
