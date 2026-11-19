@@ -36,6 +36,12 @@ export default function Home({ onStart, notify }: Props) {
   return (
     <>
       <h1 className="page-title">{K.navExams}</h1>
+      {data.exams.length === 0 && (
+        <section className="card home-empty" role="status">
+          <h2>{K.noExams}</h2>
+          <p className="mut">{K.noExamsNote}</p>
+        </section>
+      )}
       {data.exams.map((e) => (
         <section className="card" key={e.exam_id}>
           <h2>{e.title}</h2>

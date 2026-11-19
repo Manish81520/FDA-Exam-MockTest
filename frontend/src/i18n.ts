@@ -31,6 +31,8 @@ export const K = {
   total2: "ಒಟ್ಟು ಅಂಕ", topics: "ವಿಷಯವಾರು ವಿಶ್ಲೇಷಣೆ", weak: "ಸುಧಾರಣೆ ಅಗತ್ಯ",
   history: "ಹಿಂದಿನ ಪ್ರಯತ್ನಗಳು", empty: "ಇನ್ನೂ ಯಾವುದೇ ಪ್ರಯತ್ನವಿಲ್ಲ", yours: "ನಿಮ್ಮ ಉತ್ತರ", correct: "ಸರಿ ಉತ್ತರ",
   all: "ಎಲ್ಲವೂ", home: "ಮುಖಪುಟ", view: "ಫಲಿತಾಂಶ ನೋಡಿ", loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
+  noExams: "ಈಗ ಯಾವುದೇ ಪ್ರಶ್ನೆಪತ್ರಿಕೆ ಲಭ್ಯವಿಲ್ಲ (No exams available right now)",
+  noExamsNote: "ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. (Please check back later or contact the administrator.)",
   badPass: "ಪಾಸ್‌ಕೋಡ್ ತಪ್ಪಾಗಿದೆ", saveFail: "ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
   passed: "ಉತ್ತೀರ್ಣ", failed: "ಅನುತ್ತೀರ್ಣ",
   timeWarn: "ಸಮಯ ಮುಗಿಯುತ್ತಿದೆ. ಉತ್ತರಿಸದ ಪ್ರಶ್ನೆಗಳಿಗೆ ಅಂಕ ಕಳೆಯಲಾಗುತ್ತದೆ.",

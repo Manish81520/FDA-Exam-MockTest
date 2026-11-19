@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: fda-mock-exam
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECURE_COOKIES
+        value: "1"
+      - key: DB_PATH
+        value: /data/mock.db
+      - key: EXAMS_DIR
+        value: /data/exams
+      - key: PASSCODE
+        sync: false
+      - key: ADMIN_PASSCODE
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true

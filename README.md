@@ -71,6 +71,20 @@ This makes the values available to the backend. Repeat these commands in every n
 
 On a hosting provider, do not upload your local `.env`. Set the same values in the provider's environment-variable or secrets settings instead. Also set `SECURE_COOKIES=1`, and configure `EXAMS_DIR` and `DB_PATH` to locations on persistent storage. Uploaded exams or attempt history may otherwise disappear during a redeploy.
 
+## Deploy on Render Free
+
+The root `render.yaml` is a Render Blueprint for this project. It configures the Docker web service, production mode, HTTPS-only cookies, health check, and database/exam paths. Render generates `SECRET_KEY` and prompts you to enter separate `PASSCODE` and `ADMIN_PASSCODE` values when creating the Blueprint. Use new passcodes that are each at least 12 characters; do not use or upload your local `.env`.
+
+1. Push this project to a GitHub repository. Make sure `render.yaml` and `Dockerfile` are at the repository root.
+2. In Render, choose **New → Blueprint**, connect the repository, and deploy the `fda-mock-exam` service from `render.yaml`.
+3. Enter distinct candidate and admin passcodes when prompted. Keep the generated `SECRET_KEY` private.
+4. Wait for the deploy and open the generated `onrender.com` URL. The candidate page is `/`; the admin page is `/admin`.
+5. Sign in at `/admin` and upload an exam JSON file.
+
+The Docker image uses Render's `PORT` environment variable automatically (Render's default is `10000`) and keeps `8000` as the local Docker fallback. Do not set a fixed `PORT` in Render unless you also change the service's port configuration.
+
+**Important: Render Free does not support persistent disks.** The app can run there for a demo, but attempt history and exams uploaded through Admin are stored on the service's temporary filesystem. They may be lost when the service restarts, redeploys, or spins down after inactivity. Free services can also take about a minute to wake after being idle. If those records must persist, use a paid Render service with a disk or migrate data to an external database and persistent file storage before relying on the deployment.
+
 ## Run and deploy with Docker
 
 Install Docker Desktop (or Docker Engine with the Compose plugin). Docker Compose reads the existing `.env` file in the project folder. Keep your current passcodes and secret; do not copy, replace, or commit this file.

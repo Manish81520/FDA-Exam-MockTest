@@ -219,6 +219,20 @@ input:focus-visible {
   width: 100%;
 }
 
+.home-empty {
+  padding: clamp(24px, 5vw, 40px);
+  text-align: center;
+}
+
+.home-empty h2 {
+  margin-bottom: 8px;
+}
+
+.home-empty p {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
 /* Navigation */
 .nav {
   border-bottom: 1px solid var(--line);
