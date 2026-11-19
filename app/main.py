@@ -15,6 +15,7 @@ from . import attempts, config, db
 from .attempts import fail
 from .exams import Exam, delete_exam, load_exams, save_exam, validate_exam_topics
 
+config.validate_settings()
 load_exams()
 signer = URLSafeTimedSerializer(config.SECRET_KEY)
 admin_signer = URLSafeTimedSerializer(config.SECRET_KEY, salt="admin-session")

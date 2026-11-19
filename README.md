@@ -31,10 +31,10 @@ The virtual environment keeps this app's Python packages separate from other Pyt
 
 ## Configure your local `.env` file
 
-The `.env` file stores settings used by the backend. It is ignored by Git so your passcodes and secret key are not committed. This project has a local `.env` file already. If you are setting up a fresh copy and do not have one, create it from the example:
+The `.env` file stores settings used by the backend. It is ignored by Git so your passcodes and secret key are not committed. This project has a local `.env` file already; keep using it. For a fresh copy, create a blank `.env` file and add the settings below in your editor. Do not overwrite an existing `.env`.
 
 ```bash
-cp .env.example .env
+touch .env
 ```
 
 Open `.env` in your editor and set these values:
@@ -54,6 +54,7 @@ The remaining values are ready for local development:
 - `DB_PATH=mock.db`: stores attempt history in the project folder.
 - `EXAMS_DIR=data/exams`: reads exam JSON files from the project.
 - `SECURE_COOKIES=0`: allows cookies over local HTTP. For a deployed HTTPS site, set this to `1`.
+- `APP_ENV=development`: enables the local development configuration. Set this to `production` for a public deployment; the app then refuses to start with weak or missing passcodes, an invalid signing key, or insecure cookies.
 
 ### Load `.env` in your terminal
 
@@ -69,6 +70,51 @@ set +a
 This makes the values available to the backend. Repeat these commands in every new terminal where you start the backend. The frontend does not need the passcodes.
 
 On a hosting provider, do not upload your local `.env`. Set the same values in the provider's environment-variable or secrets settings instead. Also set `SECURE_COOKIES=1`, and configure `EXAMS_DIR` and `DB_PATH` to locations on persistent storage. Uploaded exams or attempt history may otherwise disappear during a redeploy.
+
+## Run and deploy with Docker
+
+Install Docker Desktop (or Docker Engine with the Compose plugin). Docker Compose reads the existing `.env` file in the project folder. Keep your current passcodes and secret; do not copy, replace, or commit this file.
+
+Check that `.env` contains `PASSCODE`, `ADMIN_PASSCODE`, and `SECRET_KEY`. The candidate and admin passcodes must be different, and `SECRET_KEY` must be a random value of at least 32 characters. If you need to create or rotate a secret, generate one with:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Use the printed value to update `SECRET_KEY` in your existing `.env` only if needed. Never commit or upload `.env`.
+
+Build the image and start the app:
+
+```bash
+docker compose up --build -d
+docker compose ps
+docker compose logs -f app
+```
+
+Open the site at <http://localhost:8001> and the admin screen at <http://localhost:8001/admin>. Port `8001` is the default to avoid common local port conflicts; set `PORT=8000` in `.env` if port `8000` is available. Press `Ctrl+C` to stop viewing logs; the app continues running. Stop the app with:
+
+```bash
+docker compose down
+```
+
+Compose creates a persistent Docker volume named `clean-data` (normally `fda-mock-exam_clean-data`). It stores SQLite attempt history and exams added through the admin screen. It starts empty: no attempts or exam papers are bundled in the image. Rebuilding or recreating the container does not erase this volume. To inspect volume names, run `docker volume ls`.
+
+For a deployed site:
+
+1. Provide Docker/Compose or build the image from this project using the included `Dockerfile`.
+2. Set `APP_ENV=production`, separate random passcodes of at least 12 characters for `PASSCODE` and `ADMIN_PASSCODE`, and a random `SECRET_KEY` of at least 32 characters using your deployment platform's secret manager. Do not copy `.env` into a public image or repository.
+3. Set `SECURE_COOKIES=1` when the app is served over HTTPS. Production mode checks this setting and refuses to start if it is disabled.
+4. Persist `/data` using a durable volume or disk. It contains both `/data/mock.db` and `/data/exams`; losing it loses attempt history and admin-managed exam changes.
+5. Route external traffic through an HTTPS reverse proxy or managed TLS ingress to container port `8000`. Do not expose a production login site over plain HTTP.
+6. Configure the platform to honor the container health check and restart policy, or equivalent platform settings.
+
+To publish a new image after changing the app, rebuild and recreate the service:
+
+```bash
+docker compose up --build -d
+```
+
+The current Compose file uses a new, empty `clean-data` volume so a fresh run starts without attempt history or exams. The earlier `fda-mock-exam_app-data` volume, if present, is left untouched and is not mounted by this Compose configuration. Do not use `docker compose down -v` unless you intentionally want to permanently delete the currently mounted database and uploaded exams.
 
 ## Run locally
 
@@ -131,7 +177,7 @@ Uploads must follow the exam JSON format and use topic keys from `data/topics.js
 
 ## Add an exam from files (local development)
 
-For local development, copy `data/exams/sample-paper1.json`, edit the copy, and save it as a `.json` file in `data/exams/`. Give it a unique `exam_id`, then validate all exam files:
+The project intentionally contains no bundled exam papers. To start using the site, sign in at `/admin` with `ADMIN_PASSCODE` and upload your own exam JSON. Alternatively, place your exam JSON in `data/exams/` for local development and validate the files:
 
 ```bash
 python -m app.exams
@@ -139,17 +185,18 @@ python -m app.exams
 
 Restart the backend to load file-based changes. On a deployed site, use the admin screen instead; uploaded changes become available without a restart.
 
-Optional question fields include `question_en`, `options_en`, `explanation`, and `paper_label`. Option E ("don't know") is added by the app. Exam scoring fields can be set in the JSON; the defaults are +1 for correct, -0.25 for wrong or blank, and 0 for option E.
+Each exam must include an `exam_id`, title, duration, and at least one question. Every question needs a unique `id`, a known topic key from `data/topics.json`, four non-empty options, and a `correct_index` from `0` to `3`. Optional question fields include `question_en`, `options_en`, and `explanation`; option E ("don't know") is added by the app. Exam scoring fields can be set in the JSON; the defaults are +1 for correct, -0.25 for wrong or blank, and 0 for option E.
 
 ## Deployment checklist
 
 - Build the frontend with `cd frontend && npm ci && npm run build`.
-- Set separate, strong `PASSCODE` and `ADMIN_PASSCODE` values in your host's secret settings.
+- Set `APP_ENV=production` and separate, random passcodes of at least 12 characters for `PASSCODE` and `ADMIN_PASSCODE` in your host's secret settings.
 - Generate and set a random `SECRET_KEY` of at least 32 characters.
 - Set `SECURE_COOKIES=1` and serve through HTTPS.
 - Mount a persistent, writable directory and set `EXAMS_DIR` to it.
 - Keep `data/topics.json` deployed; uploaded questions must reference its topic keys.
 - Make sure the deployment platform keeps the service running and forwards web traffic to the configured Uvicorn port.
+- For Docker deployments, persist `/data`, set secrets in the platform, enable secure cookies behind HTTPS, and use the provided Compose health check.
 
 Do not expose the site publicly without HTTPS and strong secrets. If your hosting provider does not provide persistent storage, uploaded exams may disappear when the service is replaced or redeployed.
 
