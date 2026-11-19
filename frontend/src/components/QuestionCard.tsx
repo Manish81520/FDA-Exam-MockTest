@@ -1,4 +1,4 @@
-import { KN_LETTERS, signed } from "../format";
+import { LETTERS, signed } from "../format";
 import { K } from "../i18n";
 import type { Choice, Marks, Question } from "../types";
 import Icon from "./Icon";
@@ -42,9 +42,9 @@ export default function QuestionCard({ q, index, marks, sel, busy, onSelect, onS
       <h2 className="qtext">{index + 1}. {q.question}</h2>
       {q.question_en && <p className="qen">{q.question_en}</p>}
       <div className="opts" role="radiogroup">
-        {q.options.map((_, i) => option(i, KN_LETTERS[i], q.options_en[i]))}
+        {q.options.map((_, i) => option(i, LETTERS[i], q.options_en[i]))}
         <div className="divider"><span>{K.eDivider}</span></div>
-        {option("E", "ಉ")}
+        {option("E", "E")}
       </div>
       <div className="actions">
         <button type="button" className="btn soft" onClick={onLater}><Icon n="bookmark" />{K.later}</button>

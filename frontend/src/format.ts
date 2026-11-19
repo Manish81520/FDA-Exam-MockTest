@@ -1,4 +1,3 @@
-export const KN_LETTERS = ["ಅ", "ಆ", "ಇ", "ಈ"];
 export const LETTERS = "ABCD";
 
 /** Seconds -> HH:MM:SS */

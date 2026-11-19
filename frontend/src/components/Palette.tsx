@@ -49,7 +49,7 @@ export default function Palette({ questions, answers, later, current, onJump, on
       <div className="legend">
         {legend.map(([label, s]) => <span key={label}><i className={`dot s-${s}`} />{label}</span>)}
       </div>
-      <button type="button" className="btn submit" onClick={onSubmit}><Icon n="clipboard" />{K.submitExam}</button>
+      <button type="button" className="btn submit" onClick={onSubmit}>{K.submitExam}</button>
       <p className="mut note">{K.submitNote}</p>
     </aside>
   );
