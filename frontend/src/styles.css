@@ -1512,11 +1512,14 @@ dialog .row {
   border-radius: 50%;
   background: var(--surface);
   text-align: center;
+  container-type: inline-size;
 }
 
 .result-score-ring-center strong {
   color: var(--acc);
-  font: 750 clamp(1.7rem, 5vw, 2.4rem)/1.1 ui-sans-serif, system-ui, sans-serif;
+  max-width: 100%;
+  font: 750 clamp(1rem, 20cqi, 2rem)/1.1 ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
 }
 
 .result-score-ring-center span,
