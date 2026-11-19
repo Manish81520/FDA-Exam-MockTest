@@ -983,6 +983,133 @@ dialog .row {
   font-size: 0.8rem;
 }
 
+.admin-header {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px max(24px, calc((100vw - 1192px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.admin-header > div {
+  display: grid;
+  line-height: 1.35;
+}
+
+.admin-header strong {
+  color: var(--acc);
+}
+
+.admin-header span {
+  color: var(--mut);
+  font-size: 0.8rem;
+}
+
+.admin-shell {
+  width: min(100%, 920px);
+}
+
+.admin-card h1,
+.admin-card h2 {
+  margin-bottom: 8px;
+}
+
+.admin-login {
+  width: min(100%, 520px);
+  margin: 6vh auto 0;
+}
+
+.admin-login form,
+.admin-upload {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.admin-login label,
+.admin-upload label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.admin-login input {
+  margin: 0;
+}
+
+.admin-upload {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.admin-upload label {
+  grid-column: 1 / -1;
+}
+
+.admin-upload input {
+  min-width: 0;
+  margin: 0;
+  padding: 7px;
+}
+
+.admin-list-section > .row {
+  margin: 24px 0 12px;
+}
+
+.admin-exam {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-exam > div {
+  min-width: 0;
+}
+
+.admin-exam h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.admin-exam .mut {
+  overflow-wrap: anywhere;
+}
+
+.admin-delete {
+  flex: 0 0 auto;
+  border-color: #efc8c4;
+  color: var(--bad);
+}
+
+.admin-delete:hover:not(:disabled) {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}
+
+.admin-message {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.admin-message.error {
+  border-color: #f3c6c2;
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.admin-message.success {
+  border-color: #b7d9c4;
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
 @media (max-width: 1080px) {
   .nav-in {
     flex-wrap: wrap;
@@ -1251,6 +1378,28 @@ dialog .row {
 
   .foot {
     padding: 14px 14px max(24px, env(safe-area-inset-bottom));
+  }
+
+  .admin-header {
+    min-height: 60px;
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .admin-upload {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-upload label {
+    grid-column: auto;
+  }
+
+  .admin-upload input {
+    width: 100%;
+  }
+
+  .admin-exam {
+    align-items: flex-start;
   }
 }
 

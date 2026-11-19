@@ -3,6 +3,7 @@ import { api } from "./api";
 import NavBar from "./components/NavBar";
 import { useToast } from "./components/Toast";
 import { K } from "./i18n";
+import Admin from "./screens/Admin";
 import Exam from "./screens/Exam";
 import History from "./screens/History";
 import Home from "./screens/Home";
@@ -19,6 +20,11 @@ type View =
   | { name: "result"; id: string };
 
 export default function App() {
+  if (window.location.pathname.replace(/\/+$/, "") === "/admin") return <Admin />;
+  return <CandidateApp />;
+}
+
+function CandidateApp() {
   const [view, setView] = useState<View>({ name: "boot" });
   const { notify, toast } = useToast();
   const goHome = useCallback(() => setView({ name: "home" }), []);
