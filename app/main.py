@@ -6,17 +6,19 @@ from collections.abc import Iterator
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from itsdangerous import BadSignature, URLSafeTimedSerializer
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from . import attempts, config, db
 from .attempts import fail
-from .exams import load_exams
+from .exams import Exam, delete_exam, load_exams, save_exam, validate_exam_topics
 
-EXAMS = load_exams()
+load_exams()
 signer = URLSafeTimedSerializer(config.SECRET_KEY)
+admin_signer = URLSafeTimedSerializer(config.SECRET_KEY, salt="admin-session")
+MAX_EXAM_UPLOAD_BYTES = 5 * 1024 * 1024
 db.init()
 
 app = FastAPI(title="FDA Mock Exam", docs_url=None, redoc_url=None)
@@ -53,7 +55,20 @@ def require_auth(request: Request) -> None:
         fail(401, "UNAUTHORIZED", "Login required")
 
 
+def require_admin(request: Request) -> None:
+    if not config.ADMIN_ENABLED:
+        fail(503, "ADMIN_DISABLED", "Set ADMIN_PASSCODE and a random SECRET_KEY of at least 32 characters")
+    try:
+        admin_signer.loads(
+            request.cookies.get("admin_session", ""),
+            max_age=config.ADMIN_SESSION_SECONDS,
+        )
+    except BadSignature:
+        fail(401, "ADMIN_UNAUTHORIZED", "Admin login required")
+
+
 _failed_logins: dict[str, list[float]] = {}
+_failed_admin_logins: dict[str, list[float]] = {}
 
 
 class Login(BaseModel):
@@ -70,6 +85,8 @@ class Answer(BaseModel):
 
 public = APIRouter(prefix="/api/auth")
 api = APIRouter(prefix="/api", dependencies=[Depends(require_auth)])
+admin_auth = APIRouter(prefix="/api/admin/auth")
+admin_api = APIRouter(prefix="/api/admin", dependencies=[Depends(require_admin)])
 
 
 @public.post("/login")
@@ -92,6 +109,36 @@ def logout(response: Response) -> dict:
     return {"ok": True}
 
 
+@admin_auth.post("/login")
+def admin_login(body: Login, request: Request, response: Response) -> dict:
+    if not config.ADMIN_ENABLED:
+        fail(503, "ADMIN_DISABLED", "Set ADMIN_PASSCODE and a random SECRET_KEY of at least 32 characters")
+    ip, now = (request.client.host if request.client else "?"), time.time()
+    recent = [t for t in _failed_admin_logins.get(ip, []) if now - t < 600]
+    if len(recent) >= 5:
+        fail(429, "RATE_LIMITED", "Too many admin login attempts. Try again later")
+    if not hmac.compare_digest(body.passcode.encode(), config.ADMIN_PASSCODE.encode()):
+        _failed_admin_logins[ip] = recent + [now]
+        fail(401, "BAD_ADMIN_PASSCODE", "Admin passcode is incorrect")
+    response.set_cookie(
+        "admin_session", admin_signer.dumps("admin"), httponly=True,
+        samesite="strict", secure=config.SECURE_COOKIES,
+        max_age=config.ADMIN_SESSION_SECONDS, path="/api/admin",
+    )
+    return {"ok": True}
+
+
+@admin_auth.get("/me", dependencies=[Depends(require_admin)])
+def admin_me() -> dict:
+    return {"ok": True}
+
+
+@admin_auth.post("/logout")
+def admin_logout(response: Response) -> dict:
+    response.delete_cookie("admin_session", path="/api/admin")
+    return {"ok": True}
+
+
 @api.get("/auth/me")
 def me() -> dict:
     return {"ok": True}
@@ -103,7 +150,60 @@ def list_exams() -> list[dict]:
              "duration_minutes": e.duration_minutes, "questions": len(e.questions),
              "marks": {"correct": str(e.marks_correct), "wrong": str(e.marks_wrong),
                        "blank": str(e.marks_blank), "decline": str(e.marks_decline)}}
-            for e in EXAMS.values()]
+            for e in load_exams().values()]
+
+
+@admin_api.get("/exams")
+def list_admin_exams() -> list[dict]:
+    return [{"exam_id": e.exam_id, "title": e.title,
+             "duration_minutes": e.duration_minutes, "questions": len(e.questions)}
+            for e in load_exams().values()]
+
+
+@admin_api.post("/exams")
+async def upload_exam(request: Request) -> dict:
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            if int(content_length) > MAX_EXAM_UPLOAD_BYTES:
+                fail(413, "EXAM_TOO_LARGE", "Exam JSON must be 5 MB or smaller")
+        except ValueError:
+            fail(400, "BAD_CONTENT_LENGTH", "Invalid request content length")
+
+    raw = bytearray()
+    async for chunk in request.stream():
+        if len(raw) + len(chunk) > MAX_EXAM_UPLOAD_BYTES:
+            fail(413, "EXAM_TOO_LARGE", "Exam JSON must be 5 MB or smaller")
+        raw.extend(chunk)
+    try:
+        exam = Exam.model_validate_json(bytes(raw))
+    except ValidationError as e:
+        details = "; ".join(
+            f"{'.'.join(str(part) for part in issue['loc'])}: {issue['msg']}"
+            for issue in e.errors(include_input=False)
+        )
+        fail(422, "INVALID_EXAM", details or "Exam JSON is invalid")
+    try:
+        validate_exam_topics(exam)
+        replaced = save_exam(exam)
+    except ValueError as e:
+        fail(422, "INVALID_EXAM", str(e))
+    except OSError:
+        fail(500, "EXAM_STORAGE_ERROR", "Could not save the exam. Check that EXAMS_DIR is writable.")
+    return {"exam_id": exam.exam_id, "title": exam.title, "replaced": replaced}
+
+
+@admin_api.delete("/exams/{exam_id}")
+def remove_exam(exam_id: str) -> dict:
+    try:
+        delete_exam(exam_id)
+    except KeyError:
+        fail(404, "NO_EXAM", "Exam not found")
+    except ValueError as e:
+        fail(422, "INVALID_EXAM_ID", str(e))
+    except OSError:
+        fail(500, "EXAM_STORAGE_ERROR", "Could not remove the exam. Check that EXAMS_DIR is writable.")
+    return {"ok": True}
 
 
 @api.get("/attempts")
@@ -113,7 +213,7 @@ def list_attempts(conn: sqlite3.Connection = Depends(get_conn)) -> list[dict]:
 
 @api.post("/attempts")
 def start_attempt(body: Start, conn: sqlite3.Connection = Depends(get_conn)) -> dict:
-    exam = EXAMS.get(body.exam_id)
+    exam = load_exams().get(body.exam_id)
     if exam is None:
         fail(404, "NO_EXAM", "Exam not found")
     return attempts.start(conn, exam)
@@ -147,6 +247,19 @@ def result(aid: str, conn: sqlite3.Connection = Depends(get_conn)) -> dict:
 
 
 app.include_router(public)
+app.include_router(admin_auth)
+app.include_router(admin_api)
 app.include_router(api)
+
+
+@app.get("/admin", include_in_schema=False)
+@app.get("/admin/", include_in_schema=False)
+def admin_page() -> FileResponse:
+    index = config.STATIC / "index.html"
+    if not index.is_file():
+        fail(404, "NOT_FOUND", "Admin interface is unavailable")
+    return FileResponse(index)
+
+
 if config.STATIC.is_dir():  # built frontend; in dev, Vite serves the UI instead
     app.mount("/", StaticFiles(directory=config.STATIC, html=True), name="static")
