@@ -2,6 +2,7 @@ import { LETTERS, signed } from "../format";
 import { K } from "../i18n";
 import type { Choice, Marks, Question } from "../types";
 import Icon from "./Icon";
+import RichText from "./RichText";
 
 interface Props {
   q: Question;
@@ -22,7 +23,7 @@ export default function QuestionCard({ q, index, marks, sel, busy, onSelect, onS
       <span className="otext">
         {key === "E"
           ? <><b>{K.dec}</b><em className="tag">Option E</em><small>{K.eNote(signed(marks.decline).replace("+", ""))}</small></>
-          : <>{q.options[key as number]}{extra ? ` (${extra})` : ""}</>}
+          : <><RichText content={q.options[key as number]} />{extra && <> (<RichText content={extra} />)</>}</>}
       </span>
       <span className="radio">{sel === key && <Icon n="check" size={14} />}</span>
     </button>
@@ -39,8 +40,8 @@ export default function QuestionCard({ q, index, marks, sel, busy, onSelect, onS
           <em className="c grey">{signed(marks.blank)} {K.blankShort}</em>
         </span>
       </div>
-      <h2 className="qtext">{index + 1}. {q.question}</h2>
-      {q.question_en && <p className="qen">{q.question_en}</p>}
+      <div className="qtext">{index + 1}. <RichText content={q.question} /></div>
+      {q.question_en && <div className="qen"><RichText content={q.question_en} /></div>}
       <div className="opts" role="radiogroup">
         {q.options.map((_, i) => option(i, LETTERS[i], q.options_en[i]))}
         <div className="divider"><span>{K.eDivider}</span></div>

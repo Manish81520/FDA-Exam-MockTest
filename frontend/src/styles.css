@@ -432,41 +432,48 @@ input:focus-visible {
 }
 
 .clock {
-  min-width: 122px;
-  padding: 7px 14px;
+  display: flex;
+  min-width: 0;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--tint);
-  line-height: 1.4;
+  background: var(--surface);
+}
+
+.clock-display {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
-.clock small {
-  display: block;
-  color: var(--mut);
+.clock-unit {
+  display: flex;
+  min-width: 0;
+  align-items: center;
 }
 
-.clock b {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 1.3rem;
-  font-variant-numeric: tabular-nums;
+.clock-value {
+  font: 750 clamp(1.1rem, 2vw, 1.5rem)/1 ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0.02em;
-  line-height: 1;
   white-space: nowrap;
 }
 
-.clock b svg {
-  display: block;
-  flex: 0 0 auto;
+.clock-separator {
+  color: var(--mut);
+  font: 700 clamp(1rem, 1.9vw, 1.4rem)/1 ui-sans-serif, system-ui, sans-serif;
+  white-space: pre;
 }
 
-.clock b span {
-  display: block;
+.clock-display.low {
+  color: var(--bad);
 }
 
-.clock b.low {
+.clock-display.low .clock-separator {
   color: var(--bad);
 }
 
@@ -1125,6 +1132,32 @@ dialog .row {
 }
 
 @media (max-width: 1080px) {
+  .xhead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .xtitle {
+    grid-column: 1;
+  }
+
+  .prog {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .clock {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .clock-value {
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+  }
+
+  .clock-separator {
+    font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+  }
+
   .nav-in {
     flex-wrap: wrap;
     gap: 10px 16px;
@@ -1297,17 +1330,16 @@ dialog .row {
   .clock {
     grid-column: 2;
     grid-row: 2;
-    min-width: 104px;
-    padding: 6px 10px;
+    padding-right: 8px;
+    padding-left: 8px;
   }
 
-  .clock b {
-    font-size: 1.1rem;
+  .clock-value {
+    font-size: clamp(1rem, 3vw, 1.35rem);
   }
 
-  .clock svg {
-    width: 16px;
-    height: 16px;
+  .clock-separator {
+    font-size: clamp(0.95rem, 2.8vw, 1.25rem);
   }
 
   .banner {
@@ -1432,20 +1464,13 @@ dialog .row {
   }
 
   .xhead {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     padding: 11px;
   }
 
-  .clock {
-    min-width: 92px;
-    padding: 5px 7px;
-  }
-
-  .clock b {
-    gap: 4px;
-    font-size: 1rem;
-  }
+  .clock-value { font-size: 1rem; }
+  .clock-separator { font-size: 0.95rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1987,9 +2012,10 @@ dialog .row {
 .result-question-status.outcome-wrong { background: var(--bad-soft); color: var(--bad); }
 .result-question-status.outcome-declined { background: #eee8fb; color: #6344a6; }
 
-.result-question h3 {
+.result-question-prompt {
   margin-bottom: 5px;
   font-size: 1.02rem;
+  font-weight: 700;
   line-height: 1.6;
 }
 
@@ -2102,7 +2128,7 @@ dialog .row {
   font-size: 0.83rem;
 }
 
-.result-explanation p {
+.result-explanation > div {
   margin-top: 3px;
   font-size: 0.88rem;
   line-height: 1.65;
@@ -2350,9 +2376,9 @@ dialog .row {
     padding: 12pt;
   }
 
-  .result-question h3,
+  .result-question-prompt,
   .result-question-kannada,
-  .result-explanation p {
+  .result-explanation > div {
     overflow-wrap: anywhere;
   }
 

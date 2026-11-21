@@ -199,7 +199,7 @@ python -m app.exams
 
 Restart the backend to load file-based changes. On a deployed site, use the admin screen instead; uploaded changes become available without a restart.
 
-Each exam must include an `exam_id`, title, duration, and at least one question. Every question needs a unique `id`, a known topic key from `data/topics.json`, four non-empty options, and a `correct_index` from `0` to `3`. Optional question fields include `question_en`, `options_en`, and `explanation`; option E ("don't know") is added by the app. Exam scoring fields can be set in the JSON; the defaults are +1 for correct, -0.25 for wrong or blank, and 0 for option E.
+Each exam must include an `exam_id`, title, duration, and at least one question. Every question needs a unique `id`, a known topic key from `data/topics.json`, four non-empty options, and a `correct_index` from `0` to `3`. Optional question fields include `question_en`, `options_en`, and `explanation`; option E ("don't know") is added by the app. Question, option, and explanation text supports safe formatting tags such as `<u>`, `<strong>`, `<em>`, `<sup>`, `<sub>`, and `<br>`. HTML attributes, scripts, and embedded content are not applied. Exam scoring fields can be set in the JSON; the defaults are +1 for correct, -0.25 for wrong or blank, and 0 for option E.
 
 ## Deployment checklist
 

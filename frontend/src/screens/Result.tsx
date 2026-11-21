@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import Icon from "../components/Icon";
+import RichText from "../components/RichText";
 import { clock, LETTERS } from "../format";
 import { K } from "../i18n";
 import type { Attempt, Outcome, Question, Result as ResultData, ReviewItem } from "../types";
@@ -13,10 +14,10 @@ const ENGLISH_NAMES: Record<Outcome, string> = {
 };
 const ORDER: Outcome[] = ["correct", "wrong", "declined", "blank"];
 
-function answerLabel(x: ReviewItem, question?: Question): string {
+function answerLabel(x: ReviewItem, question?: Question) {
   if (x.choice === null) return K.blank;
   if (x.choice === "E") return `E. ${K.dec}`;
-  return `${LETTERS[x.choice]}. ${question?.options_en[x.choice] || x.options[x.choice]}`;
+  return <>{LETTERS[x.choice]}. <RichText content={question?.options_en[x.choice] || x.options[x.choice]} /></>;
 }
 
 function money(value: number): string {
@@ -259,14 +260,14 @@ export default function Result({ id, onHome, notify }: Props) {
                   <span className="result-question-topic">{topicLabel}</span>
                   <span className={`result-question-status outcome-${item.outcome}`}>{ENGLISH_NAMES[item.outcome]}</span>
                 </div>
-                <h3>{questionText}</h3>
+                <div className="result-question-prompt"><RichText content={questionText} /></div>
                 {question?.question_en && question.question_en !== item.question && (
-                  <p className="result-question-kannada">{item.question}</p>
+                  <div className="result-question-kannada"><RichText content={item.question} /></div>
                 )}
                 <div className="result-answer-summary">
-                  <div><span>Your answer · ನಿಮ್ಮ ಉತ್ತರ</span>                  <strong>{answerLabel(item, question)}</strong></div>
+                  <div><span>Your answer · ನಿಮ್ಮ ಉತ್ತರ</span><strong>{answerLabel(item, question)}</strong></div>
                   <div><span>Correct answer · ಸರಿಯಾದ ಉತ್ತರ</span>
-                    <strong>{LETTERS[item.correct_index]}. {question?.options_en[item.correct_index] || item.options[item.correct_index]}</strong>
+                    <strong>{LETTERS[item.correct_index]}. <RichText content={question?.options_en[item.correct_index] || item.options[item.correct_index]} /></strong>
                   </div>
                 </div>
                 <div className="result-options">
@@ -278,8 +279,8 @@ export default function Result({ id, onHome, notify }: Props) {
                       <div className={`result-option${correct ? " is-correct" : ""}${selected && !correct ? " is-selected-wrong" : ""}`}
                         key={`${item.id}-${optionIndex}`}>
                         <span className="result-option-letter">{LETTERS[optionIndex]}</span>
-                        <div><span>{englishOption || option}</span>
-                          {englishOption && englishOption !== option && <small>{option}</small>}</div>
+                        <div><span><RichText content={englishOption || option} /></span>
+                          {englishOption && englishOption !== option && <small><RichText content={option} /></small>}</div>
                         {correct && <b>Correct</b>}
                         {selected && !correct && <b>Your choice</b>}
                       </div>
@@ -287,7 +288,7 @@ export default function Result({ id, onHome, notify }: Props) {
                   })}
                 </div>
                 {item.explanation && (
-                  <div className="result-explanation"><strong>Explanation · ವಿವರಣೆ</strong><p>{item.explanation}</p></div>
+                  <div className="result-explanation"><strong>Explanation · ವಿವರಣೆ</strong><div><RichText content={item.explanation} /></div></div>
                 )}
               </article>
             );

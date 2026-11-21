@@ -154,6 +154,11 @@ export default function Exam({ attempt, onDone, notify }: Props) {
   const unanswered = qs.filter((q) => !(q.id in ans)).length;
   const pct = Math.round(((qs.length - unanswered) / qs.length) * 100);
   const penalty = Math.abs(parseFloat(attempt.marks.blank));
+  const timeParts = [
+    Math.floor(left / 3600),
+    Math.floor((left % 3600) / 60),
+    left % 60,
+  ];
 
   return (
     <>
@@ -170,11 +175,15 @@ export default function Exam({ attempt, onDone, notify }: Props) {
           <div className="bar"><i style={{ width: `${pct}%` }} /></div>
         </div>
         <div className="clock">
-          <small>{K.timeLeft}</small>
-          <b role="timer" className={left <= 600 ? "low" : ""}>
-            <Icon n="clock" size={20} />
-            <span>{clock(left)}</span>
-          </b>
+          <div className={`clock-display${left <= 600 ? " low" : ""}`}
+            role="timer" aria-label={`${K.timeLeft}: ${clock(left)}`}>
+            {timeParts.map((part, index) => (
+              <span className="clock-unit" key={index}>
+                {index > 0 && <span className="clock-separator" aria-hidden="true"> : </span>}
+                <span className="clock-value" aria-hidden="true">{String(part).padStart(2, "0")}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <p className="banner"><Icon n="alert" size={16} /><b>{K.note}</b> {K.banner(penalty.toFixed(2))}</p>
